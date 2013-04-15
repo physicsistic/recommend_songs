@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Music Recommendation Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/css/docs.css" rel="stylesheet">
+    <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="assets/ico/logo.png">
+
+  </head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar">
+
+    <!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">Music Recommendation Engine</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li>
+                <a href="./index.html">Project Overview</a>
+              </li>
+              <li class="">
+                <a href="./data.html">Data Extraction</a>
+              </li>
+              <li class="active">
+                <a href="./isomap.html">ISOMAP</a>
+              </li>
+              <li class="">
+                <a href="./visualization.html">Visualization</a>
+              </li>
+              <li class="">
+                <a href="./references.html">References</a>
+              </li>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Page body
+  ================================================== -->
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 bs-docs-sidebar">
+        <ul class="nav nav-list bs-docs-sidenav">
+          <li><a href="#background"><i class="icon-chevron-right"></i>Background</a></li>
+          <li><a href="#section2"><i class="icon-chevron-right"></i>Algorithm</a></li>
+          <li><a href="#section3"><i class="icon-chevron-right"></i>Implementation</a></li>
+          <li><a href="#section4"><i class="icon-chevron-right"></i>Serial & Parallel Comparison</a></li>
+        </ul>
+      </div>
+
+      <div class="span9">
+        <div id="background" class="hero-unit">
+          <h1>ISOMAP</h1>
+           <p>Isometric Feature Mapping (ISOMAP) is a non-linear dimensionality reduction algorithm introduced for manifold learning. The algorithm finds the map that preserves the global, nonlinear geometry of the data by preserving the geodesic manifold interpoint distances. The geodesic distances represent the shortest paths along the curved surface of the manifold measured as if the surface was flat. This can be approximated by a sequence of short steps between the neighboring sample points. The advantage of using isomap is that it can be applied to non-linear models and computes the global optimal solution to the underlying manifold.</p>
+        </div>      
+
+        <!-- Algorithm
+        ================================================== -->
+        <section id="section2">
+          <div class="page-header">
+            <h2>Algorithm</h2>
+          </div>
+          <p>The isomap algorithm takes as input the distances <em>d<sub>x</sub>(i, j) </em> between all pairs <em>i, j</em> from <em>N</em> data points in the high-dimensional input space. The algorithm outputs coordinate vectors <em>y<sub>i</sub></em> in a <em>d</em>-dimensional Euclidean space Y that best represent the intrinsic geometry of the data.</p>
+          <dl>
+  			<dt><code style='font-weight:normal'>Step 1</code> Construct the neighborhood graph</dt>
+  			<dd>Define the graph G over all data points by connecting the points <em>i</em> and <em>j</em> if there are closer than a threshold є then set the edge lengths equal to <em>d<sub>x</sub>(i, j) </em></dd>
+		  </dl>
+		  <dl>
+		  	<dt><code style='font-weight:normal'>Step 2</code> Compute the shortest path (Floyd’s Algorithm)</dt>
+		  	<dd>Initialize <em>d<sub>G</sub>(i,j) = d<sub>x</sub>(i, j) </em> if <em>i, j</em> are linked by an edge;  <em>d<sub>G</sub>(i,j) = infinity</em> otherwise. Then for each value of <em>k = 1, 2, …, N</em> in turn, replace all entries <em>d<sub>G</sub>(i,j)</em> by <em>min{d<sub>G</sub>(i,j), d<sub>G</sub>(i,k) + d<sub>G</sub>(k,j)}</em>. The matrix of final values D<sub>G</sub> = <em>{d<sub>G</sub>(i,j)}</em> will contain the shortest path distances between all pairs of point in G. </dd>
+		  </dl>
+		  <dl>
+		  	<dt><code style='font-weight:normal'>Step 3</code> Construct d-dimensional embedding (Multidimensional Scaling)</dt>
+		  	<dd>The multidimensional scaling implements the SMACOF, “Scaling by MAjorizing a COmplicated Function”. This is an optimization strategy where for a set of n m dimensional data items, a configuration X of <em>n</em> points in <em>r</em> dimensional space (where <em>r < m</em>) is sought that minimizes the stress function. This is an iterative process that allows for the quickest convergence to the the desired dimension.</dd>
+		  </dl>
+        </section>
+        
+         <!-- Implementation
+        ================================================== -->
+        <section id="section3">
+          <div class="page-header">
+            <h2>Implementation</h2>
+          </div>
+          <p>Our implementation of the isomap algorithm is implemented in four separate steps taking the input data of n rows of songs with r columns corresponding to the r different attributes of the song.</p>
+          <blockquote>
+          	<p>[Song Name] [Danceability] [Energy] [Hotttness] [Tempo]</p>
+		  </blockquote>
+		  <p>This <em>n x r</em> matrix is then processed into an adjacency matrix by taking the geodesic distance D<sub>x</sub>(i,j) between each points where</p>
+          <blockquote>
+          	<p><em>d<sub>x</sub>(i,j)</em> = 
+&radic;<em> ( D<sub>i</sub> - D<sub>j</sub> )<sup>2</sup> + ( E<sub>i</sub> - E<sub>j</sub> )<sup>2</sup> + ( H<sub>i</sub> - H<sub>j</sub> )<sup>2</sup> + ( T<sub>i</sub> - T<sub>j</sub> )<sup>2</sup></em>
+</p>
+		  </blockquote>
+		  <p>We then construct a n x n symmetric adjacency matrix which is then used to construct the graph matrix according to the description in the algorithm. The threshold EPSILON is tuned to suit the data such that it is representative of “closeness”. The serial implementation of this step loops through all possible pairs of songs with a runtime of O(n2). The parallel implementation is done by using implementing a multidimensional array on the GPU using PyCuda.</p>
+		  <p>The step to compute the all part shortest path is implemented in serial according to the pseudocode:<p>
+            <pre class="prettyprint linenums">
+Input n: Number of vertices
+a[0..n-1][0..n-1] -- Adjacency matrix
+Output: Transformed a that contains shortest path lengths
+for ( k = 0; k < n; k++ )
+	for ( i = 0; i < n; i++ )
+		for ( j = 0; j < n; j++ )
+			a[i][j] = min ( a[i][j], a[i][k] + a[k][j] );
+            </pre>
+          <p>This serial implementation has a runtime of <em>O</em>(n<sup>3</sup>). The parallel implementation was done with the two inner-most loop implemented on a multidimensional array via PyCuda</p>
+          <p>The final MDS step was implemented either through solving the eigen system solution for the serial implementation or using the SMACOF on the kernel</p>
+        </section>
+
+         <!-- Serial & Parallel Comparison
+        ================================================== -->
+        <section id="section4">
+          <div class="page-header">
+            <h2>Serial & Parallel Comparison</h2>
+          </div>
+		  <p>The following shows a comparison of the serial and parallel implementation of the algorithm for different data sizes of n = 100, 1000, 10,000 songs.</p>
+		  <table class="table table-striped">
+		  	  <caption>n=100</caption>
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th>Serial Time (<em>s</em>)</th>
+                  <th>Parallel Time (<em>s</em>)</th>
+                  <th>Speedup</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Calculate distance matrix</td>
+                  <td>0.04</td>
+                  <td>0.03</td>
+                  <td>1.33</td>
+                </tr>
+                <tr>
+		          <td>Calculate graph matrix</td>
+                  <td>0.04</td>
+                  <td>0.00</td>
+                  <td>N/A</td>
+                </tr>
+                <tr>
+				  <td>Find all pair shortest path</td>
+                  <td>1.46</td>
+                  <td>0.01</td>
+                  <td>146</td>
+                </tr>
+                <tr>
+                	<td>MDS</td>
+                	<td>0.33</td>
+                	<td>0.02</td>
+                	<td>17</td>
+                </tr>
+                <tr class='info'>
+                	<td>Total</td>
+                	<td>1.87</td>
+                	<td>0.06</td>
+                	<td>31</td>
+                </tr>
+              </tbody>
+            </table>
+        
+		  <table class="table table-striped">
+		  	  <caption>n=1000</caption>
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th>Serial Time (<em>s</em>)</th>
+                  <th>Parallel Time (<em>s</em>)</th>
+                  <th>Speedup</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Calculate distance matrix</td>
+                  <td>3.20</td>
+                  <td>0.04</td>
+                  <td>83</td>
+                </tr>
+                <tr>
+		          <td>Calculate graph matrix</td>
+                  <td>4.11</td>
+                  <td>0.01</td>
+                  <td>394</td>
+                </tr>
+                <tr>
+				  <td>Find all pair shortest path</td>
+                  <td>1395.23</td>
+                  <td>0.19</td>
+                  <td>7343</td>
+                </tr>
+                <tr>
+                	<td>MDS</td>
+                	<td>36.88</td>
+                	<td>0.09</td>
+                	<td>410</td>
+                </tr>
+                <tr class='info'>
+                	<td>Total</td>
+                	<td>1439.36</td>
+                	<td>0.34</td>
+                	<td>4362</td>
+                </tr>
+              </tbody>
+            </table>
+        
+          		  <table class="table table-striped">
+		  	  <caption>n=10,000</caption>
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th>Serial Time (<em>s</em>)</th>
+                  <th>Parallel Time (<em>s</em>)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Calculate distance matrix</td>
+                  <td>330.8</td>
+                  <td>0.88</td>
+                </tr>
+                <tr>
+		          <td>Calculate graph matrix</td>
+                  <td></td>
+                  <td>0.32</td>
+                </tr>
+                <tr>
+				  <td>Find all pair shortest path</td>
+                  <td></td>
+                  <td>168.29</td>
+                </tr>
+                <tr>
+                	<td>MDS</td>
+                	<td></td>
+                	<td>0.66</td>
+                </tr>
+                <tr class='info'>
+                	<td>Total</td>
+                	<td>Extremely long</td>
+                	<td>170.15</td>
+                </tr>
+              </tbody>
+            </table>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer
+  ================================================== -->
+  <footer class="footer">
+    <small>
+      by Melissa Niu, Jeanine Sinanan-Singh, Ye Zhao
+    </small>
+  </footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+    <script src="assets/js/bootstrap-affix.js"></script>
+
+    <script src="assets/js/holder/holder.js"></script>
+    <script src="assets/js/google-code-prettify/prettify.js"></script>
+
+    <script src="assets/js/application.js"></script>
+
+
+
+  </body>
+</html>

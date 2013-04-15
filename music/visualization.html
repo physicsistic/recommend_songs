@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Music Recommendation Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/css/docs.css" rel="stylesheet">
+    <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="assets/ico/logo.png">
+
+  </head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar">
+
+    <!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">Music Recommendation Engine</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="">
+                <a href="./index.html">Project Overview</a>
+              </li>
+              <li class="">
+                <a href="./data.html">Data Extraction</a>
+              </li>
+              <li class="">
+                <a href="./isomap.html">ISOMAP</a>
+              </li>
+              <li class="active">
+                <a href="./visualization.html">Visualization</a>
+              </li>
+              <li class="">
+                <a href="./references.html">References</a>
+              </li>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Page body
+  ================================================== -->
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 bs-docs-sidebar">
+        <ul class="nav nav-list bs-docs-sidenav">
+          <li><a href="#section1"><i class="icon-chevron-right"></i> ISOMAP Data</a></li>
+          <li><a href="#section2"><i class="icon-chevron-right"></i> Clustering</a></li>
+          <li><a href="#section3"><i class="icon-chevron-right"></i> Song Recommendations</a></li>
+        </ul>
+      </div>
+      <div class="span9">
+        <div class="hero-unit">
+          <h1>Visualization</h1>
+           <p class='lead'>Plotting the results of ISOMAP to discover relationships among songs</p>
+        </div>      
+   
+        <!-- Sample section 1
+        ================================================== -->
+        <section id="section1">
+          <div class="page-header">
+            <h2>ISOMAP Data</h2>
+          </div>
+		  <h4>Raw Data</h4>
+		    <div class='row-fluid'>
+		    	<div class='span6'>
+		  			<img src="assets/img/viz/histogram-raw.png" class="img-polaroid" width='400'>
+		  		</div>
+		  		<div class='span6'>
+		  			<p>Before determining a strategy for processing the ISOMAP output to find clusters or groups of similar songs, we examined the raw data in a histogram to see if there were any trends in the output data. The histogram clearly shows the ISOMAP output is relatively normal with a lot of songs having similar scores around zero and a much smaller number of songs in the tails.</p><p>This would seem to indicate that the majority of songs are related and similar given the distribution of scores around 0, with only a minority of songs being radically different from the center. From this, we decided that it may be worthwhile to investigate the ISOMAP output through grouping songs into genres so as to discern clusters especially within the middle 50% of scores.</p>
+		  		</div>
+		  	</div>
+		  <h4>Grouping by Top Genres</h4>
+		    <div class='row-fluid'>
+		    	<div class='span6'>
+		  			<img src="assets/img/viz/10000 stacked hist.png" class="img-polaroid" width='400'>
+		  		</div>
+		  		<div class='span6'>
+		  			<p>We processed the ISOMAP data to find the top ten genres (determined by the genres with the greatest number of associated unique tracks) and then created a stacked bar graph (akin to a histogram) to display the frequency of scores within this grouping. The graph to the left displays each genre as a distinct color in the bar and the size of the bar indicates the number of tracks for the genre and score range.</p>
+		  			<p>Interestingly, even within a genre, scores still spread across a broad range showing dissimilarity within any one genre. However, the majority of tracks within any genre do cluster around a smaller score range (still somewhat normal) indicating a great degree of similarity within genre which is expected. We thought this could be a good start for determining recommendations. So, we proceeded with the genre based grouping to discern more about song clusters and their similarity.
+		  			</p>
+		  		</div>
+        </section>
+
+        <!-- Sample section 2
+        ================================================== -->
+        <section id="section2">
+          <div class="page-header">
+            <h2>Clustering</h2>
+          </div>
+
+          <h4>Clusters in Full Dataset</h4>
+          <div class='row-fluid'>
+          	<div class='span6'>
+          		<img src="assets/img/viz/all-genres-15-bin.png" class="img-polaroid" width='400'>
+          	</div>
+          	<div class='span6'>
+          		<img src="assets/img/viz/all-genres-30-bin.png" class="img-polaroid" width='400'>
+          	</div>
+          </div>
+          <br />
+          <p>
+          Searching for clusters within the full dataset proved difficult. Clear clusters was partially related to the number of score "bins" used to separate the individual tracks into groups. In the above graphs, each circle represents a unique group of tracks that are part of a specific, unique genre and score bin. The left graph uses 15 mins while the right graph uses twice as many bins (30). While the 30 bin graph provides more separation, the 15 bin graph still shows similar results in that one can still see some genres (or colors) have generally more and larger circles than others and these tend to be around the center or slightly right of center. Outside of these more obvious large groups, there is a lot of diversity, which is to be expected in music.
+          </p>
+          <p> Because there were some clearly different data points - specifically points that were significantly larger than other points - regardless of the number of bins used, we decided that exploring these larger "clusters" would prove worthwhile in recommending songs.
+          </p>
+
+		  <h4>Clusters in Largest Genres</h4>
+		  <img src="assets/img/viz/recs.png" class="img-polaroid">
+		  <br>
+		  <br>
+		  <p>
+		  To explore the larger data points seen in the full dataset plots from above, we sorted each track and its associated ISOMAP score into genres and looked at tracks that were in one of the top fifteen genres. Where top genres were measured by the number of tracks that were part of that genre (e.g. top 15 were the largest 15 genres by track count).  
+		  </p>
+		  <p>
+		  This graph shows genres against bin, where each bin maps to a score range (as in initial histogram). Each data point is colored by its genre and is sized according to the number of songs meeting that data points criteria (in the genre and score bin). Each point is also annotated with the exact tracks that map to that genre and bin. From this specifically, we attempted to recommend songs
+		  </p>
+		  <p>
+		  We would expect songs within the same circle to be similar and the further from the circle you go to the left or right the more dissimilar the song relative to the initial point of comparison. This is interesting as this graph suggests a lot of diversity within any genre, since all spread across the majority of bins, with some even having points far away from the center. While this may seem unexpected, the genres displayed, although indicative of a particular style, do not require that songs be exactly similar and tracks do cross genre classifications, in that they can be considered part of more than one genre. So, a future direction would be to order genres by relatedness and look for similarity within score bin at nearby genres and we would expect to see more similarity within <em>bin</em> across genres than within <em>genre</em>.
+		  </p>
+		  <p>
+		  Below we provide an example from the Progressive House genre shown in this graph. The 2nd row from the top has open annotations for the large center circle with several tracks two of which are available below and the two left and right outlying points, of which the far left track is provided.
+		  </p>
+        </section>
+        
+        <!-- Sample section 2
+        ================================================== -->
+        <section id="section3">
+          <div class="page-header">
+            <h2>Song Recommendations</h2>
+          </div>
+    	  <p> From the graph above, we were able to create song recommendations based on
+    	  similarity. These two songs were similar as they were in the same cluster - same score bucket (13) and same genre (Progressive House).</p>
+    	  <blockquote>
+    	    <ul class='inline'>
+    	    <li>
+    	  	<p>Come Together - <strong>Tommyboy & Sultan</strong></p>
+    	  <audio controls="controls">
+  			<source src="assets/audio/similar1.mp3" type="audio/mp3">
+			Your browser does not support this audio format.
+		  </audio>
+		  </li>
+		  <li>
+    	  	<p>My Trip - <strong>MidiDropMusic</strong></p>
+    	  <audio controls="controls">
+  			<source src="assets/audio/similar2.mp3" type="audio/mp3">
+			Your browser does not support this audio format.
+		  </audio>
+		  </li>
+		  </ul>
+		  </blockquote>
+
+    	  <p>Whereas, this song, although within the same genre (Progressive House) as the above two, was in a very different score bucket (7), and thus despite being in the same genre is different from these two (less similar).</p>
+    	  <blockquote>
+    	  	<p>Percunia - <strong>Pako & Frederik</strong></p>
+    	  <audio controls="controls">
+  			<source src="assets/audio/different.mp3" type="audio/mp3">
+			Your browser does not support this audio format.
+		  </audio>
+		  </blockquote>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer
+  ================================================== -->
+  <footer class="footer">
+    <small>
+      by Melissa Niu, Jeanine Sinanan-Singh, Ye Zhao
+    </small>
+  </footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+    <script src="assets/js/bootstrap-affix.js"></script>
+
+    <script src="assets/js/holder/holder.js"></script>
+    <script src="assets/js/google-code-prettify/prettify.js"></script>
+
+    <script src="assets/js/application.js"></script>
+
+
+
+  </body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Music Recommendation Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/css/docs.css" rel="stylesheet">
+    <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="assets/ico/logo.png">
+
+  </head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar">
+
+    <!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">Music Recommendation Engine</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="">
+                <a href="./index.html">Project Overview</a>
+              </li>
+              <li class="active">
+                <a href="./data.html">Data Extraction</a>
+              </li>
+              <li class="">
+                <a href="./isomap.html">ISOMAP</a>
+              </li>
+              <li class="">
+                <a href="./visualization.html">Visualization</a>
+              </li>
+              <li class="">
+                <a href="./references.html">References</a>
+              </li>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Page body
+  ================================================== -->
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 bs-docs-sidebar">
+        <ul class="nav nav-list bs-docs-sidenav">
+          <li><a href="#background"><i class="icon-chevron-right"></i> Background</a></li>
+          <li><a href="#dataset"><i class="icon-chevron-right"></i> Dataset</a></li>
+          <li><a href="#implementation"><i class="icon-chevron-right"></i> Implementation</a></li>
+          <li><a href="#comparison"><i class="icon-chevron-right"></i> Serial & Parallel Comparison</a></li>
+        </ul>
+      </div>
+      <div class="span9">
+        <div class="hero-unit" id="background">
+           <h1>Data Extraction</h1>
+           <p>In order to create a good estimtion of song groupings to make accurate recommendations, a large dataset was needed to seed the algorithms. The final dataset was a combination of the song information provided by The Echo Nest and the raw data provided by the Million Song Dataset.</p>
+        </div>            
+        <!-- The Echo Nest
+        ================================================== -->
+        <section id="dataset">
+          <div class="page-header">
+            <h1>Dataset</h1>
+          </div>
+
+          <h3>The Echo Nest</h3>
+          <p>The Echo Nest is an enormous library of information on songs, artists, and albums. Currently, it hosts a collection of data including the following:
+              <ul>
+                <li>1,129,475,078,041 data points</li>
+                <li>34,501,646 known songs</li>
+                <li>2,308,532 known artists</li>
+              </ul>
+          It provides an API to return information on everything from genre to energy level to related artists. However, due to limitations to the API calls that can be made per minute, it would have thrown an uncrollable variable that would skew any timing data collected during the serial and parallel algorithmic collection of data.
+          </p>
+          
+          <h3>Million Song Dataset</h3>
+          <p> The Million Song Dataset was created in collaboration with the Echo Nest to include information on a million of the most popular songs. For each song, not only are there fields pulled from the Echo Nest, but also the actual song files themselves including information from <a href="http://www.playme.com">playme.com</a>, <a href="http://www.7digital.com">7digital.com</a>, etc. From the dataset, the following data was captured for analysis:
+            <ul>
+              <li>1,000,000 songs</li>
+              <li>54 descriptive fields</li>
+              <li>280 GB of data</li>
+            </ul>
+          </p>
+          
+          <h3>Data Fields</h3>
+          <p>Due to the large size of the dataset, only certain fields were kept for analysis in the next section of the song analysis. The highlighted fields were then used in the ISOMAP algorithm. They are as follows:
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Description</th>
+              <tr>
+              </thead>
+            <tbody>
+              <tr>
+                <td>track id</td>
+                <td>string</td>
+                <td>EchoNest ID</td>
+              </tr>
+              <tr>
+                <td>title</td>
+                <td>string</td>
+                <td>Song Title</td>
+              </tr>
+              <tr>
+                <td>artist terms</td>
+                <td>string[]</td>
+                <td>Relevant genre</td>
+              </tr>
+              <tr>
+                <td>artist name</td>
+                <td>string</td>
+                <td>Artist Name</td>
+              </tr>
+              <tr class="alert">
+                <td>danceability</td>
+                <td>float</td>
+                <td>How danceable it is</td>
+              </tr>
+              <tr class="alert">
+                <td>energy</td>
+                <td>float</td>
+                <td>How energetic the song is</td>
+              </tr>
+              <tr class="alert">
+                <td>song hotttnesss</td>
+                <td>float</td>
+                <td>How popular it is</td>
+              </tr>
+              <tr class="alert">
+                <td>tempo</td>
+                <td>float</td>
+                <td>Tempo in BPM</td>
+              </tr>
+              <tr>
+                <td>year</td>
+                <td>int</td>
+                <td>Song release year</td>
+              </tr>
+            </tbody>
+          </table>
+          </p>
+        </section>
+
+        
+        <!-- Implementation
+        ================================================== -->
+        <section id="implementation">
+          <div class="page-header">
+            <h1>Implementation</h1>
+          </div>
+          
+          <h3>Serial Implementation</h3>
+          <p>Since each song's information was stored on its own line within the Million Song Dataset, it was fairly straightforward to extract out the necessary information from each line and run it through a function <code>load_track()</code> to pull out necessary fields. However, even though only 9 fields were being extracted, with 280GB of data, anazyling 1 million songs takes 31.67 hours.</p>
+          
+          <h3>Parallel Implementation</h3>
+          <p>Thankfully, the processing of each song was embarssingly parallel so this could be easily done in parallel with Amazon's Elastic MapReduce (<code>EMR</code>) to complete in a fraction of the time. Each mapper would perform the same processing as the serial implementation using the function <code>load_track()</code> for a given song; note that no reducer was needed. </p>
+          <center>
+          <img src="assets/img/mapreduce.jpg" width="70%"/>
+          </center>
+          <br/>
+          <p>This was made easier by using Yelp's <code>MRJob</code> to run MapReduce jobs. It's also of note that the Million Song Dataset's data was stored through Amazon EWS.
+            <pre class="prettyprint linenums">
+class MRSongs(MRJob):
+  # maps outputting relevant fields for each track
+  def mapper(self, _, line):
+      t = load_track(line)
+      if t:
+          print t['track_id'], '\t', t['title'], '\t', 
+          t['artist_terms'], '\t', t['artist_name'], '\t',
+          t['danceability'], '\t', t['energy'], '\t',
+          t['song_hotttnesss'], '\t', t['tempo'], '\t', t['year']
+  # no need for a reducer
+
+if __name__ == '__main__':
+    MRSongs.run()
+            </pre>
+        </section>
+
+        <!-- Serial & Parallel Comparison
+        ================================================== -->
+        <section id="comparison">
+          <div class="page-header">
+            <h1>Serial & Parallel Comparison</h1>
+          </div>
+          <p>As expected, the parallel implementation reduced the overall runtime to a fraction of the serial runtime.</p>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Serial Time <em>(s)</em></th>
+                <th>Parallel Time <em>(s)</em></th>
+                <th>Instances</th>
+                <th>Speedup</th>
+              </tr>
+            </thead>
+           `<tbody>
+              <tr>
+                <td>114012</td>
+                <td>3624</td>
+                <td>1</td>
+                <td>31.5</td>
+              </tr>
+              <tr>
+                <td>114012</td>
+                <td>1448</td>
+                <td>4</td>
+                <td>78.7</td>
+              </tr>
+              <tr>
+                <td>114012</td>
+                <td>354</td>
+                <td>16</td>
+                <td>322.1</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>        
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer
+  ================================================== -->
+  <footer class="footer">
+    <small>
+      by Melissa Niu, Jeanine Sinanan-Singh, Ye Zhao
+    </small>
+  </footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+    <script src="assets/js/bootstrap-affix.js"></script>
+
+    <script src="assets/js/holder/holder.js"></script>
+    <script src="assets/js/google-code-prettify/prettify.js"></script>
+
+    <script src="assets/js/application.js"></script>
+
+
+
+  </body>
+</html>
